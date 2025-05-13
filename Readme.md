@@ -83,4 +83,21 @@ server will run on `http://localhost:5173`
 - Hono.js as router `https://hono.dev/docs/`
 - React.js for frontend
 
+## Keycloak
+- Keycloak server running on `http://localhost:8080`
+    - Client ID: `account`
+    - Client Protocol: `openid-connect`
+    - Valid Redirect URIs: `http://localhost:5173/*`
+    - Valid Post Logout Redirect URIs: `http://localhost:5173/*`
+    - Web Origins: `http://localhost:5173`
+    
+- Referred docs:
+    - https://www.keycloak.org/securing-apps/javascript-adapter
+    - https://www.npmjs.com/package/keycloak-js
 
+## Outline Docs
+- `https://www.getoutline.com/developers#tag/documents/POST/documents.answerQuestion` for querying the docs
+
+## Chatwoot
+- `https://www.chatwoot.com/hc/user-guide/articles/1677497472-how-to-use-agent-bots` for chatbots and integration with inboxes
+- `https://www.chatwoot.com/hc/user-guide/articles/1677693021-how-to-use-webhooks` on how webhooks work and how to use them, payload it sends.
