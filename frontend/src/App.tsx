@@ -19,34 +19,35 @@ async function login() {
   }
 }
 
-async function logout() {
-  try {
-    await kc.logout({
-      redirectUri: "http://localhost:5173",
-    });
-  } catch (error) {
-    console.error("Logout Failed", error);
-  }
-}
-
 function App() {
   const [auth, setAuth] = useState(false);
   async function loadUserProfile() {
     try {
-      const user = await kc.loadUserInfo()
+      const user = await kc.loadUserInfo();
       console.log(user);
     } catch (error) {
       console.error("Failed to load user profile", error);
     }
   }
 
-  async function init(){
+  async function logout() {
+    try {
+      await kc.logout({
+        redirectUri: "http://localhost:5173",
+      });
+      setAuth(false);
+    } catch (error) {
+      console.error("Logout Failed", error);
+    }
+  }
+
+  async function init() {
     try {
       const auth = await kc.init({
-        onLoad: "login-required", 
+        onLoad: "login-required",
         checkLoginIframe: true,
-        pkceMethod: 'S256'
-      })
+        pkceMethod: "S256",
+      });
       setAuth(auth);
       console.log(auth);
       console.log(kc);
@@ -95,7 +96,11 @@ function App() {
   return (
     <div>
       <p>{auth ? "Welcome to Turium AI" : "Please login"}</p>
-     {auth ? <button onClick={logout}>Logout</button> : <button onClick={login}>Login</button>}
+      {auth ? (
+        <button onClick={logout}>Logout</button>
+      ) : (
+        <button onClick={login}>Login</button>
+      )}
     </div>
   );
 }
