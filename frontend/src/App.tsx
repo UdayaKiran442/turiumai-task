@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Keycloak from "keycloak-js";
 
 const initOptions = {
@@ -8,29 +8,6 @@ const initOptions = {
 };
 
 const kc = new Keycloak(initOptions);
-
-kc.init({
-  onLoad: "login-required", 
-  checkLoginIframe: true,
-  pkceMethod: 'S256'
-})
-  .then((auth) => {
-    if (!auth) {
-      console.log("Not Authenticated");
-    } else {
-      /* Remove below logs if you are using this on production */
-      console.info("Authenticated");
-      console.log("auth", auth);
-      console.log("Keycloak", kc);
-      console.log("Access Token", kc.token);
-      kc.onTokenExpired = () => {
-        console.log("token expired");
-      };
-    }
-  })
-  .catch((error) => {
-    console.error("Authentication Failed", error);
-  });
 
 async function login() {
   try {
@@ -42,7 +19,18 @@ async function login() {
   }
 }
 
+async function logout() {
+  try {
+    await kc.logout({
+      redirectUri: "http://localhost:5173",
+    });
+  } catch (error) {
+    console.error("Logout Failed", error);
+  }
+}
+
 function App() {
+  const [auth, setAuth] = useState(false);
   async function loadUserProfile() {
     try {
       const user = await kc.loadUserInfo()
@@ -52,15 +40,36 @@ function App() {
     }
   }
 
+  async function init(){
+    try {
+      const auth = await kc.init({
+        onLoad: "login-required", 
+        checkLoginIframe: true,
+        pkceMethod: 'S256'
+      })
+      setAuth(auth);
+      console.log(auth);
+      console.log(kc);
+      console.log(kc.token);
+    } catch (error) {
+      console.error("Failed to initialize Keycloak", error);
+    }
+  }
+
   useEffect(() => {
-    loadUserProfile();
+    init();
   }, []);
+
+  useEffect(() => {
+    if (auth) {
+      loadUserProfile();
+    }
+  }, [auth]);
 
   return (
     <div>
-      <p>{kc.authenticated ? "Welcome to Turium AI" : "Please login"}</p>
-      <button onClick={login}>Login</button>
-      <p>hello</p>
+      <p>{auth ? "Welcome to Turium AI" : "Please login"}</p>
+     {auth ? <button onClick={logout}>Logout</button> : <button onClick={login}>Login</button>}
     </div>
   );
 }
