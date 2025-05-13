@@ -1,20 +1,21 @@
+import { useEffect } from "react"
 import Keycloak from "keycloak-js"
 
 const initOptions ={
-    url: "http://localhost:8080", // Remove /auth for Keycloak 17+
-    realm: "turiumai",
+    url: "http://localhost:8080", 
+    realm: "master",
     clientId: "account"
 }
 
 const kc = new Keycloak(initOptions);
 
 kc.init({
-  onLoad: 'check-sso', // Supported values: 'check-sso' , 'login-required'
-  checkLoginIframe: true,
-  pkceMethod: 'S256'
+  onLoad: 'login-required', // Supported values: 'check-sso' , 'login-required'
+  // checkLoginIframe: true,
+  // pkceMethod: 'S256'
 }).then((auth) => {
   if (!auth) {
-    window.location.reload();
+    console.log("Not Authenticated");
   } else {
     /* Remove below logs if you are using this on production */
     console.info("Authenticated");
@@ -25,18 +26,40 @@ kc.init({
       console.log('token expired')
     }
   }
-}, () => {
-  /* Notify the user if necessary */
-  console.error("Authentication Failed");
+}).catch((error) => {
+  console.error("Authentication Failed", error);
 });
 
+async function login(){
+  try {
+    await kc.login({
+      redirectUri: "http://localhost:5173"
+    });
+  } catch (error) {
+    console.error("Login Failed", error);
+  }
+}
+
+async function loadUserProfile() {
+  try {
+    const user = await kc.loadUserProfile();
+    console.log(user);
+  } catch (error) {
+    console.error("Failed to load user profile", error);
+  }
+}
+
+// useEffect(() => {
+//   loadUserProfile();
+// }, []);
 
 function App() {
 
   return (
     <div>
       <p>{kc.authenticated ? "Welcome to Turium AI" : "Please login"}</p>
-      <button onClick={() => kc.login()}>Login</button>
+      <button onClick={login}>Login</button>
+      <p>hello</p>
     </div>
   )
 }
