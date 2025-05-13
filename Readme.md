@@ -72,4 +72,15 @@ bun run dev
 ```
 server will run on `http://localhost:5173`
 
+# Citations
+
+## Gen AI
+- Windsurf Agentic AI as code editor
+- ChatGPT for coding assistance
+
+## Tech stack
+- Bun.js as run time environment
+- Hono.js as router `https://hono.dev/docs/`
+- React.js for frontend
+
 
