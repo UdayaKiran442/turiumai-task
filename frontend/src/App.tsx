@@ -63,8 +63,34 @@ function App() {
   useEffect(() => {
     if (auth) {
       loadUserProfile();
+      // Load Chatwoot script when user is authenticated
+      loadChatwootScript();
     }
   }, [auth]);
+
+  // Function to dynamically load Chatwoot script
+  const loadChatwootScript = () => {
+    const BASE_URL = "https://app.chatwoot.com";
+    const script = document.createElement("script");
+    script.innerHTML = `
+      (function (d, t) {
+        var BASE_URL = "${BASE_URL}";
+        var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+        g.src = BASE_URL + "/packs/js/sdk.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g, s);
+        g.onload = function () {
+          window.chatwootSDK.run({
+            websiteToken: "yGvte1Y7ecSBMxBpMebVZG3Z",
+            baseUrl: BASE_URL,
+          });
+        };
+      })(document, "script");
+    `;
+    document.body.appendChild(script);
+  };
 
   return (
     <div>
